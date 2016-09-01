@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
 
-@interface SettingsDetailViewController : UIViewController <MessageDelegate>
+
+@interface SettingsDetailViewController : UIViewController 
 
 - (void) settingsDict: (NSMutableDictionary *) dict;
 

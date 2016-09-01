@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
+
 #import "CollectionProtocol.h"
 
 @class SubsystemStatus;
 
-@interface CollectionViewController : UIViewController <UISplitViewControllerDelegate, CollectionController, MessageDelegate>
+@interface CollectionViewController : UIViewController <UISplitViewControllerDelegate, CollectionController>
 
 - (bool) presentView: (NSString*) name;
 - (void) firstView: (NSString*) name;

@@ -7,12 +7,16 @@
 //
 
 #import "BehaviorViewController.h"
+#import "PubSubMsg.h"
+#import "LogViewController.h"
+#include "ps.h"
 
 @interface BehaviorViewController ()
 {
     UITableView *tableView;
     
     NSMutableDictionary *my_domains;
+    
 }
 - (void) behavior_registry_updateFor: (NSString*) domain name: (NSString*) name;
 - (void) refresh_from_registry: (NSString*) domain;
@@ -94,6 +98,10 @@ void behaviors_registry_callback(const char *_domain, const char *_name, const v
                     [NSNumber numberWithInt:reg_entry.source], @"source",
                     nil];
             [settings setObject:dict forKey:name];
+            
+            NSArray *sortedSettingsNames =
+                [settings.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+            [domain_dict setObject: sortedSettingsNames forKey: @"sorted"];
         }
         
         switch(type)
@@ -123,10 +131,22 @@ void behaviors_registry_callback(const char *_domain, const char *_name, const v
                 break;
         }
 
-//        if ([domain isEqualToString:@"Behaviors"])
-//        {
-//            [dict setObject:[NSString stringWithFormat:@"%s", reg_entry.string_value] forKey:@"name"];
-//        }
+        if ([domain isEqualToString:@"Behavior Status"])
+        {
+            if ([name isEqualToString:@"Status"])
+            {
+                if (strcmp(reg_entry.string_value, "running") != 0)
+                {
+                    NSLog(@"%@ = %s", name, reg_entry.string_value);
+                    
+                    [LogViewController logAppMessage:[NSString stringWithFormat:@"Behavior: %s", reg_entry.string_value]];
+                }
+            }
+            else
+            {
+                NSLog(@"%@ = %s", name, reg_entry.string_value);
+            }
+        }
         
         [tableView reloadData];
     }
@@ -172,10 +192,11 @@ void behaviors_registry_callback(const char *_domain, const char *_name, const v
     NSString *sectionName = [my_domains.allKeys objectAtIndex: indexPath.section];
     NSMutableDictionary *domain_dict = [my_domains objectForKey: sectionName];
     NSMutableDictionary *settings = [domain_dict objectForKey: @"settings"];
+    NSArray *sortedSettingNames = [domain_dict objectForKey:@"sorted"];
    
     if (settings.allKeys.count > indexPath.row)
     {
-        NSString *settingName = [settings.allKeys objectAtIndex:indexPath.row];
+        NSString *settingName = [sortedSettingNames objectAtIndex:indexPath.row];
         NSMutableDictionary *dict = [settings objectForKey:settingName];
         cell.textLabel.text = settingName;
         
@@ -221,8 +242,8 @@ void behaviors_registry_callback(const char *_domain, const char *_name, const v
     if ([sectionName isEqualToString:@"Behaviors"])
     {
         NSMutableDictionary *domain_dict = [my_domains objectForKey: sectionName];
-        NSMutableDictionary *settings = [domain_dict objectForKey: @"settings"];        
-        NSString *settingName = [settings.allKeys objectAtIndex:indexPath.row];
+        NSArray *sortedSettingNames = [domain_dict objectForKey: @"sorted"];
+        NSString *settingName = [sortedSettingNames objectAtIndex:indexPath.row];
         
         psMessage_t msg;
         msg.messageType = ACTIVATE;
@@ -231,18 +252,11 @@ void behaviors_registry_callback(const char *_domain, const char *_name, const v
         
         [PubSubMsg sendMessage:&msg];
         
-        LogInfo("beh: activating %s", settingName.UTF8String);
-        
+        [LogViewController logAppMessage:[NSString stringWithFormat:@"Activating %@", settingName]];
         return indexPath;
     }
     
    return nil;
 }
-
--(void) didReceiveMsg: (PubSubMsg*) message{
-
-}
-
-
 
 @end

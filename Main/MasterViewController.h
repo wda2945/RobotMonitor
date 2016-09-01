@@ -7,21 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
+
 #import "CollectionProtocol.h"
 #import "CollectionViewController.h"
 
 #import "BehaviorViewController.h"
 #import "ConditionsViewController.h"
 #import "LogViewController.h"
-//#import "RCViewController.h"
+#import "RCViewController.h"
 #import "RegistryViewController.h"
+#import "RobotListTableViewController.h"
+
 //#import "SubsystemViewController.h"
 
-@interface MasterViewController : UITableViewController <MessageDelegate, CollectionController>
+@interface MasterViewController : UITableViewController < CollectionController>
 
 @property (strong, nonatomic) LogViewController         *logViewController;
-//@property (strong, nonatomic) RCViewController          *rcController;
+@property (strong, nonatomic) RCViewController          *rcController;
 //@property (strong, nonatomic) SubsystemViewController   *subsystemViewController;
 
 @property (strong, nonatomic) NSMutableDictionary *viewControllers;

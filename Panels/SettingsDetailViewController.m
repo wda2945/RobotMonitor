@@ -197,9 +197,5 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void) didReceiveMsg: (PubSubMsg*) message
-{
-    
-}
 
 @end

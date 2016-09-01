@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
 
-@interface RCViewController : UIViewController <MessageDelegate>
+@interface RCViewController : UIViewController 
+
+@property bool lateral;
 
 @end

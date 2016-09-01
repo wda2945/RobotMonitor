@@ -36,19 +36,15 @@
     // Do any additional setup after loading the view.
     self.definesPresentationContext = YES;
 
-//    for (NSString *vcn in [MasterViewController getMasterViewController].viewControllers.allKeys)
-//    {
-//        UIViewController *vc =[[MasterViewController getMasterViewController].viewControllers objectForKey:vcn];
-//        
-//        [self addChildViewController: vc];
-//    }
+    UIViewController *vc =[[MasterViewController getMasterViewController].viewControllers objectForKey:@"List"];
+    [self addChildViewController: vc];
     
     startFrame = self.view.bounds;
     startFrame.origin.x += startFrame.size.width;
     
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self firstView: @"System"];
-//    });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self firstView: @"List"];
+    });
     
 }
 
@@ -63,7 +59,8 @@
     
     if (vc)
     {
-        vc.view.frame = self.view.bounds;
+        CGRect rect = self.view.bounds;
+        vc.view.frame = rect;
         [self.view addSubview: vc.view];
         currentController = vc;
     }
@@ -86,12 +83,6 @@
         return YES;
     }
     else return NO;
-}
-
-
--(void) didReceiveMsg: (PubSubMsg*) message
-{
-    [[MasterViewController getMasterViewController].viewControllers.allValues makeObjectsPerformSelector:@selector( didReceiveMsg:) withObject:message];
 }
 
 - (void)didReceiveMemoryWarning

@@ -10,6 +10,8 @@
 #import "AppDelegate.h"
 #import "CollectionViewController.h"
 #import "MasterViewController.h"
+#import "RobotListTableViewController.h"
+#import "LogViewController.h"
 
 #import "serial/socket/ps_socket_client.hpp"
 #include "packet/serial_packet/linux/ps_packet_serial_linux.hpp"
@@ -34,6 +36,9 @@ public:
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [MasterViewController getMasterViewController].connectionCaption = nsCaption;
+            AppDelegate *appDelegate = (AppDelegate*)[UIApplication sharedApplication].delegate;
+            [appDelegate sendPing];
+            [LogViewController logAppMessage: nsCaption];
         });
     }
 
@@ -48,16 +53,15 @@ public:
     
     ps_socket_client *robotConnection;
     Connection_Observer *connectionObserver;
-    
-    NSMutableDictionary *knownRobots;
+
 }
-- (void) sendPing;
 
 @end
 
 @implementation AppDelegate
 
 void SIGPIPEhandler(int sig);
+extern const char *topicNames[PS_TOPIC_COUNT];
 
 message_handler_t appMessageHandler;
 PingCallback_t  pingCallback;
@@ -70,13 +74,13 @@ PingCallback_t  pingCallback;
         self.collectionController  = [_splitViewController.viewControllers lastObject];
         _splitViewController.delegate = _collectionController;
     }
-    
-    knownRobots = [NSMutableDictionary dictionary];
-    
+
     //preload registry
     NSString *path = [[NSBundle mainBundle] pathForResource: @"rm_registry_preload" ofType: @"txt"];
     
     load_registry([path UTF8String]);
+    
+    ps_register_topic_names(topicNames, PS_TOPIC_COUNT);
     
     //subscribe to topics
     ps_subscribe(RESPONSE_TOPIC, appMessageHandler);
@@ -96,7 +100,7 @@ PingCallback_t  pingCallback;
     the_broker().subscribe(ANNOUNCEMENTS_TOPIC, trns);
     the_broker().subscribe(SYS_ACTION_TOPIC, trns);
     
-    pingTimer = [NSTimer scheduledTimerWithTimeInterval:10.0 target:self selector:@selector(sendPing) userInfo:NULL repeats:YES];
+    pingTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 target:self selector:@selector(sendPing) userInfo:NULL repeats:YES];
     
     robotConnection->add_ping_observer(pingCallback, nullptr);
     
@@ -108,26 +112,16 @@ void pingCallback(char *_robot, char *_ip_address, void *args)
     NSString *robot = [NSString stringWithFormat:@"%s", _robot];
     NSString *ip = [NSString stringWithFormat:@"%s", _ip_address];
 
-    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
-    
-    if (![appDelegate->knownRobots objectForKey:robot])
-    {
-        //new one
-        NSLog(@"Adding %@ at %@", robot, ip);
-        [appDelegate->knownRobots setObject:ip forKey:robot];
-        
-        if (appDelegate->knownRobots.count == 1)
-        {
-            [appDelegate connectTo: robot atIP: ip];
-        }
-    }
-    else{
-//        NSLog(@"Ignored %@ at %@", robot, ip);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        RobotListTableViewController *rlt = [RobotListTableViewController sharedRobotListTableViewController];
+        [rlt addRobot: robot atIP: ip];
+    });
 }
 
-- (void) connectTo: (NSString*) robot atIP: (NSString*) ip_address
+- (bool) connectTo: (NSString*) robot atIP: (NSString*) ip_address port: (int) port
 {
+    [LogViewController logAppMessage: [NSString stringWithFormat:@"Selected %@ at %@:%i", robot, ip_address, port]];
+    
     NSString *documents = [NSHomeDirectory() stringByAppendingPathComponent:@"/Documents/Config.plist"];
     
     NSDictionary *fileDict = nil;//[NSDictionary dictionaryWithContentsOfFile: documents];
@@ -143,11 +137,8 @@ void pingCallback(char *_robot, char *_ip_address, void *args)
     if (!configDict)
     {
         //robot not found
-        NSString *defaultRobot = [fileDict objectForKey:@"Default"];
-        NSLog(@"%@ not found. Using default: %@", robot, defaultRobot);
-        configDict = [fileDict objectForKey: defaultRobot];
-        self.ipAddress  = [configDict objectForKey:@"IP Address"];
-        self.robotName  = [configDict objectForKey:@"Name"];
+        NSLog(@"%@ not found.", robot);
+        return NO;
     }
     else
     {
@@ -169,6 +160,8 @@ void pingCallback(char *_robot, char *_ip_address, void *args)
     }
 
     robotConnection->set_ip_address([_ipAddress UTF8String]);
+    
+    return YES;
 }
 
 void appMessageHandler(const void *msg, int len)
@@ -189,8 +182,6 @@ void appMessageHandler(const void *msg, int len)
 {
     [PubSubMsg sendSimpleMessage:PING_MSG];
     send_registry_sync();
-    
-//    LogInfo("Ping/sync message sent");
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -219,5 +210,12 @@ void appMessageHandler(const void *msg, int len)
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+
+#define topicmacro(e, name) name,
+const char *topicNames[] = {
+#include "rm_topics_list.h"
+};
+#undef topicmacro
 
 @end

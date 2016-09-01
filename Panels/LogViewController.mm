@@ -8,7 +8,7 @@
 
 #import "syslog/ios/ps_syslog_ios.hpp"
 #import "LogViewController.h"
-//#import "MasterViewController.h"
+
 
 LogViewController *thisLogViewController;
 
@@ -145,10 +145,6 @@ static ps_syslog_ios log_object(syslog_callback);
         
         [(UITableView*)self.view reloadData];
     }
-}
-
--(void) didReceiveMsg: (PubSubMsg*) message
-{
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

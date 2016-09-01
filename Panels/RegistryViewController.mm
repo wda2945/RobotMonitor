@@ -8,6 +8,7 @@
 
 #import "RegistryViewController.h"
 #import "SettingsDetailViewController.h"
+#include "ps.h"
 
 @interface RegistryViewController ()
 {
@@ -328,9 +329,6 @@ void registry_callback(const char *_domain, const char *_name, const void *arg)
     }
 }
 
--(void) didReceiveMsg: (PubSubMsg*) message{
-
-}
 
 
 

@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
+#include "ps.h"
 
-@interface ConditionsViewController : UITableViewController <MessageDelegate>
+@interface ConditionsViewController : UITableViewController 
 
 - (ConditionsViewController*) initForSource: (Source_t) src domain: (NSString*) section;
 

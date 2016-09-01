@@ -45,6 +45,9 @@ static MasterViewController *me;
 
     self.connectionCaption = @"Disconnected";
     
+    RobotListTableViewController *ListViewController = [[RobotListTableViewController alloc] init];
+    [_viewControllers setObject:ListViewController forKey: @"List"];
+    
     [super awakeFromNib];
 }
 
@@ -84,6 +87,14 @@ static MasterViewController *me;
         vc.panelTitle = title;
         [_viewControllers setObject:vc forKey: title];
     }
+    else if ([name isEqualToString:@"Remote"])
+    {
+        self.rcController    = [_storyBoard instantiateViewControllerWithIdentifier:@"RC"];
+        viewController = _rcController;
+        _rcController.title = title;
+        _rcController.lateral = [[panelDict objectForKey:@"Lateral"] boolValue];
+        [_viewControllers setObject:_rcController forKey: title];
+    }
     
     if (self.collectionController == nil)
     {
@@ -97,9 +108,7 @@ static MasterViewController *me;
         }
     }
     
-    [self.collectionController addViewController:viewController];
-    
-    if ([title isEqualToString: @"System"]) [self.collectionController firstView:@"System"];
+    [self.collectionController addViewController: viewController];
     
     [(UITableView*) self.view reloadData];
     
@@ -232,17 +241,6 @@ static MasterViewController *me;
     return NO;
 }
 
--(void) didReceiveMsg: (PubSubMsg*) message
-{
-    [_viewControllers.allValues makeObjectsPerformSelector:@selector(didReceiveMsg:) withObject:message];
-}
-
--(void) connection: (bool) conn
-{
-    connected = conn;
-    [(UITableView*) self.view reloadData];
-}
-
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.collectionController == nil)
@@ -258,6 +256,7 @@ static MasterViewController *me;
     }
     switch(indexPath.section){
         case 0:
+            if ([_collectionController presentView: @"List"]) return indexPath;
             break;
         case 1:
         {

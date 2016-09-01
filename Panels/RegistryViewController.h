@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
 
-@interface RegistryViewController : UITableViewController <MessageDelegate>
+
+@interface RegistryViewController : UITableViewController 
 
 - (RegistryViewController*) initForDomains: (NSArray*) domains;
 

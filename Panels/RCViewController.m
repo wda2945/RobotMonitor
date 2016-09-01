@@ -103,7 +103,7 @@
 
 - (void) sendCommandX: (float) x andY: (float) y andRotateZ: (float) z
 {
-    xMove = x / 10;
+    if (_lateral) xMove = x / 10;
     yMove = y / 10;
     zRotation = z * 10;
 }
@@ -116,7 +116,7 @@
     if ([(AppDelegate*)[[UIApplication sharedApplication] delegate] connected])
     {
         psMessage_t msg;
-        msg.header.messageType = MOVE;
+        msg.messageType = MOVE;
         msg.threeFloatPayload.xSpeed = yMove;
         msg.threeFloatPayload.ySpeed = xMove;
         msg.threeFloatPayload.zRotateSpeed = zRotation;
@@ -128,10 +128,6 @@
     }
 }
 
--(void) didReceiveMsg: (PubSubMsg*) message
-{
-    
-}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

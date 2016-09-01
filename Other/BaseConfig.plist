@@ -27,7 +27,6 @@
 				<array>
 					<string>Hexapod</string>
 					<string>Power</string>
-					<string>Status</string>
 					<string>Pose</string>
 				</array>
 			</dict>
@@ -41,6 +40,7 @@
 				<key>Domains</key>
 				<array>
 					<string>Behavior Status</string>
+					<string>Status</string>
 					<string>Behaviors</string>
 				</array>
 			</dict>
@@ -50,12 +50,40 @@
 				<key>Name</key>
 				<string>Conditions</string>
 				<key>Title</key>
-				<string>Hexapod Conditions</string>
+				<string>Status Conditions</string>
 				<key>Icon</key>
 				<string>Conditions.png</string>
 				<key>Domains</key>
 				<array>
-					<string>Conditions</string>
+					<string>Status Conditions</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Source</key>
+				<integer>2</integer>
+				<key>Name</key>
+				<string>Conditions</string>
+				<key>Title</key>
+				<string>Proximity Conditions</string>
+				<key>Icon</key>
+				<string>Conditions.png</string>
+				<key>Domains</key>
+				<array>
+					<string>Prox Conditions</string>
+				</array>
+			</dict>
+			<dict>
+				<key>Source</key>
+				<integer>2</integer>
+				<key>Name</key>
+				<string>Conditions</string>
+				<key>Title</key>
+				<string>Error Conditions</string>
+				<key>Icon</key>
+				<string>Conditions.png</string>
+				<key>Domains</key>
+				<array>
+					<string>Error Conditions</string>
 				</array>
 			</dict>
 			<dict>
@@ -93,6 +121,16 @@
 				<array>
 					<string>Data</string>
 				</array>
+			</dict>
+			<dict>
+				<key>Name</key>
+				<string>Remote</string>
+				<key>Title</key>
+				<string>Remote Control</string>
+				<key>Icon</key>
+				<string>RC.png</string>
+				<key>Lateral</key>
+				<true/>
 			</dict>
 			<dict>
 				<key>Name</key>

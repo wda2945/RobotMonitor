@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
 
-@interface BehaviorViewController : UITableViewController <MessageDelegate>
+
+@interface BehaviorViewController : UITableViewController 
 
 - (BehaviorViewController*) initForDomains: (NSArray*) domains;
 

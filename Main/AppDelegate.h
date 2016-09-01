@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "PubSubMsg.h"
-#import "MessageDelegateProtocol.h"
+
 #import "MasterViewController.h"
 #import <CoreFoundation/CoreFoundation.h>
 
@@ -30,6 +30,7 @@
 
 @property  (readonly) bool connected;
 
-- (void) connectTo: (NSString*) robot atIP: (NSString*) ip_address;
+- (bool) connectTo: (NSString*) robot atIP: (NSString*) ip_address port: (int) port;
+- (void) sendPing;
 
 @end

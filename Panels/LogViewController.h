@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MessageDelegateProtocol.h"
 
-@interface LogViewController : UITableViewController < MessageDelegate>
+@interface LogViewController : UITableViewController
 
 + (LogViewController*) getLogViewController;
 + (void) logAppMessage: (NSString*) message;

@@ -50,7 +50,6 @@
 
 - (void) publish
 {
-    [[MasterViewController getMasterViewController] didReceiveMsg: self];
 }
 
 #define messagemacro(m,q,t,f,l) f,
